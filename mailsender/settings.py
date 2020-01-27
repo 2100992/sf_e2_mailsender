@@ -40,7 +40,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
     'https://sf-e2-mailsender.herokuapp.com/',
     'localhost',
-    '127.0.0.1
+    '127.0.0.1',
 ]
 
 
