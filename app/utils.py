@@ -7,7 +7,7 @@ import smtplib
 
 try:
     HOST = os.environ.get('HOST')
-    PORT = os.environ.get('PORT')
+    PORT = int(os.environ.get('PORT'))
     FROM = os.environ.get('FROM')
     PASSWORD = os.environ.get('PASSWORD')
     LOGIN = os.environ.get('LOGIN')
