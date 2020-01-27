@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
-
+import dj_database_url
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -20,12 +20,28 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '#b0s3edl-5y$&%#a0rt-f*)7*_@q_fmk(-m%#8at^v*^!v$=c4'
+
+# Take SECRET_KEY from the environment variable, and if it doesn’t work out,
+# assign a temporary key (suitable for development on localhost)
+
+try:
+    SECRET_KEY = os.environ.get('SECRET_KEY')
+except:
+    print('Error getting SECRET_KEY from environ!!!')
+    SECRET_KEY = None
+
+if not SECRET_KEY:
+    SECRET_KEY = '#b0s3edl-5y$&%#a0rt-f*)7*_@q_fmk(-m%#8at^v*^!v$=c4'
+    print(f'temporary SECRET_KEY = {SECRET_KEY}')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'https://sf-e2-mailsender.herokuapp.com/',
+    'localhost',
+    '127.0.0.1
+]
 
 
 # Application definition
@@ -37,6 +53,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     'app'
 ]
 
@@ -74,12 +91,23 @@ WSGI_APPLICATION = 'mailsender.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+
+try:
+    DATABASE_URL = os.environ.get('DATABASE_URL')
+except:
+    DATABASE_URL = None
+
+if DATABASE_URL:
+    DATABASES = {
+        'default': dj_database_url.config(default=DATABASE_URL)
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
+    }
 
 
 # Password validation
@@ -106,7 +134,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+# TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Moscow'
 
 USE_I18N = True
 
