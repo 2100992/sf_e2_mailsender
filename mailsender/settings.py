@@ -38,7 +38,7 @@ if not SECRET_KEY:
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'https://sf-e2-mailsender.herokuapp.com/',
+    'sf-e2-mailsender.herokuapp.com',
     'localhost',
     '127.0.0.1',
 ]
