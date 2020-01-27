@@ -5,7 +5,21 @@ import datetime
 
 import smtplib
 
-from .secrets import HOST, PORT, FROM, PASSWORD, LOGIN
+try:
+    HOST = os.environ.get('HOST')
+    PORT = os.environ.get('PORT')
+    FROM = os.environ.get('FROM')
+    PASSWORD = os.environ.get('PASSWORD')
+    LOGIN = os.environ.get('LOGIN')
+except:
+    HOST = None
+    PORT = None
+    FROM = None
+    PASSWORD = None
+    LOGIN = None
+
+if not HOST:
+    from .secrets import HOST, PORT, FROM, PASSWORD, LOGIN
 
 
 class SenderThread(Thread):
