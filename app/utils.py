@@ -1,26 +1,21 @@
 from threading import Thread
 
+import os
+
 import time
 import datetime
 
 import smtplib
 
-try:
+
+if os.path.isfile('app/secrets.py'):
+    from .secrets import HOST, PORT, FROM, PASSWORD, LOGIN
+else:
     HOST = os.environ.get('HOST')
     PORT = int(os.environ.get('PORT'))
     FROM = os.environ.get('FROM')
     PASSWORD = os.environ.get('PASSWORD')
     LOGIN = os.environ.get('LOGIN')
-except:
-    HOST = None
-    PORT = None
-    FROM = None
-    PASSWORD = None
-    LOGIN = None
-
-if not HOST:
-    from .secrets import HOST, PORT, FROM, PASSWORD, LOGIN
-
 
 class SenderThread(Thread):
 # class SenderThread:
