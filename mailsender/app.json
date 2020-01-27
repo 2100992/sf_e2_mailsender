@@ -1,9 +1,0 @@
-{
-    "name": "Python on Heroku",
-    "description": "simple training project",
-    "image": "heroku/python",
-    "keywords": [
-        "python",
-        "django"
-    ]
-}
