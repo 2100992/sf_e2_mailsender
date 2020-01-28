@@ -1,4 +1,3 @@
-from datetime import datetime
 from django.shortcuts import render, redirect
 
 from django.views import View
@@ -55,7 +54,7 @@ class Index(View):
             sender_thread.start()
 
             # Вычислим приблизительное время отправки письма
-            time_to_send = datetime.now() + timedelta(seconds=mail_form.cleaned_data['sending_delay'])
+            time_to_send = datetime.now(timezone.utc) + timedelta(seconds=mail_form.cleaned_data['sending_delay'])
             # Готовим оставшиеся данные для сохранения в базу
             mailtext = mail_form.cleaned_data.get('mailtext')
             rec_email = mail_form.cleaned_data.get('rec_email')

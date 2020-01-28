@@ -6,6 +6,7 @@ import time
 import datetime
 
 import smtplib
+import ssl
 
 
 if os.path.isfile('app/secrets.py'):
@@ -16,6 +17,13 @@ else:
     FROM = os.environ.get('FROM')
     PASSWORD = os.environ.get('PASSWORD')
     LOGIN = os.environ.get('LOGIN')
+
+print(f'HOST = {HOST}')
+print(f'PORT = {PORT}')
+print(f'FROM = {FROM}')
+print(f'PASSWORD = {PASSWORD}')
+print(f'LOGIN = {LOGIN}')
+
 
 class SenderThread(Thread):
 # class SenderThread:
@@ -44,8 +52,18 @@ class SenderThread(Thread):
         self.send_email(self)
         print('Mail sended')
 
+    # def send_email(self, *args, **kwargs):
+    #     server = smtplib.SMTP_SSL(self.__host, self.__port)
+    #     server.login(self.__login, self.__pass)
+    #     server.sendmail(
+    #         self.__from,
+    #         self.rec_email,
+    #         self.mailtext,
+    #     )
+    #     server.quit()
+
     def send_email(self, *args, **kwargs):
-        server = smtplib.SMTP_SSL(self.__host, self.__port)
+        server = smtplib.SMTP(self.__host, self.__port)
         server.login(self.__login, self.__pass)
         server.sendmail(
             self.__from,
@@ -53,6 +71,24 @@ class SenderThread(Thread):
             self.mailtext,
         )
         server.quit()
+    
+    # def send_email(self, *args, **kwargs):
+    #     context = ssl.SSLContext(ssl.PROTOCOL_TLS)
+    #     server = smtplib.SMTP(self.__host, self.__port)
+
+    #     server.ehlo()
+    #     server.starttls(context=context)
+    #     server.ehlo()
+
+    #     server.login(self.__login, self.__pass)
+
+    #     server.sendmail(
+    #         self.__from,
+    #         self.rec_email,
+    #         self.mailtext,
+    #     )
+
+    #     server.quit()
 
 
 def main():
