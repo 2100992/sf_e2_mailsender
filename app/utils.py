@@ -34,6 +34,9 @@ class SenderThread(Thread):
         self.rec_email = kwargs.get('rec_email')
         self.mailtext = kwargs.get('mailtext')
         self.sending_delay = kwargs.get('sending_delay', 0)
+        
+        if isinstance(self.sending_delay, str):
+            self.sending_delay = int(self.sending_delay)
 
     def run(self):
         print('Thread run')
