@@ -62,33 +62,33 @@ class SenderThread(Thread):
     #     )
     #     server.quit()
 
-    def send_email(self, *args, **kwargs):
-        server = smtplib.SMTP(self.__host, self.__port)
-        server.login(self.__login, self.__pass)
-        server.sendmail(
-            self.__from,
-            self.rec_email,
-            self.mailtext,
-        )
-        server.quit()
-    
     # def send_email(self, *args, **kwargs):
-    #     context = ssl.SSLContext(ssl.PROTOCOL_TLS)
     #     server = smtplib.SMTP(self.__host, self.__port)
-
-    #     server.ehlo()
-    #     server.starttls(context=context)
-    #     server.ehlo()
-
     #     server.login(self.__login, self.__pass)
-
     #     server.sendmail(
     #         self.__from,
     #         self.rec_email,
     #         self.mailtext,
     #     )
-
     #     server.quit()
+    
+    def send_email(self, *args, **kwargs):
+        context = ssl.SSLContext(ssl.PROTOCOL_TLS)
+        server = smtplib.SMTP(self.__host, self.__port)
+
+        server.ehlo()
+        server.starttls(context=context)
+        server.ehlo()
+
+        server.login(self.__login, self.__pass)
+
+        server.sendmail(
+            self.__from,
+            self.rec_email,
+            self.mailtext,
+        )
+
+        server.quit()
 
 
 def main():
