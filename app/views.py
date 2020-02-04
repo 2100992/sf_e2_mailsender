@@ -11,6 +11,7 @@ from .models import MailSender
 from .utils import SenderThread
 
 from datetime import datetime, timedelta, timezone
+import time
 
 
 # Create your views here.
@@ -35,11 +36,11 @@ class Index(View):
         # Добавим в контекст поле об отправлено/не_отправлено
         # похорошему этот функционал нужно выносить на сторону JS
         # Но это потом
-        for sender in senders:
-            if sender.time_to_send < datetime.now(timezone.utc):
-                setattr(sender, 'sent', False)
-            else:
-                setattr(sender, 'sent', True)
+        # for sender in senders:
+        #     if sender.time_to_send < datetime.now(timezone.utc):
+        #         setattr(sender, 'sent', False)
+        #     else:
+        #         setattr(sender, 'sent', True)
 
         context['mailsenders'] = senders
 
@@ -54,7 +55,8 @@ class Index(View):
             sender_thread.start()
 
             # Вычислим приблизительное время отправки письма
-            time_to_send = datetime.now(timezone.utc) + timedelta(seconds=mail_form.cleaned_data['sending_delay'])
+            # time_to_send = datetime.now(timezone.utc) + timedelta(seconds=mail_form.cleaned_data['sending_delay'])
+            time_to_send = int((time.time() + mail_form.cleaned_data['sending_delay'])*1000)
             # Готовим оставшиеся данные для сохранения в базу
             mailtext = mail_form.cleaned_data.get('mailtext')
             rec_email = mail_form.cleaned_data.get('rec_email')
