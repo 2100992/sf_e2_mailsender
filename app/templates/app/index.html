@@ -12,76 +12,102 @@
 </head>
 
 <body>
-    <div id="app">
-        <div class="container mt-3">
-            <p>С помощью этой странички вы можете выполнить рассылку писем с отсрочкой по времени.</p>
-            <form name="mailSenderForm" method="post">{% csrf_token %}
-                <div class="form-group">
-                    <label for="id_rec_email">Email address</label>
-                    <input type="email" name="rec_email" class="form-control" id="id_rec_email">
-                    <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone
-                        else.</small>
-                </div>
-                <div class="form-group">
-                    <label for="id_mailtext">Текст письма.</label>
-                    <textarea class="form-control" id="id_mailtext" name="mailtext" rows="3"></textarea>
-                </div>
-                <div class="form-group">
-                    <span>Отправить письмо через </span>
-                    <label for="id_sending_delay">{% verbatim  %}{{ value }}{% endverbatim  %}</label>
-                    <span> секунд.</span>
-                    <input v-model="value" type="range" class="form-control-range" id="id_sending_delay"
-                        name="sending_delay" min="0" max="100" value="90" step="1">
-                </div>
-                <button type="submit" class="btn btn-primary" value="Send Email">Send Email</button>
-            </form>
-        </div>
-        <div class="container mb-3">
-            <div class="card">
-                <div class="card-header">
-                    <div class="row">
-                        <div class="col">Получатель</div>
-                        <div class="col-6">Текст письма</div>
-                        <div class="col">Время отправления</div>
-                    </div>
-                </div>
-                <ul class="list-group list-group-flush">
-                    {% for sender in mailsenders %}
-                    <li :class="[isSent ? 'bg-success text-white' : 'bg-alert text-white']"
-                        class="list-group-item">
-                        <div class="row">
-                            <div class="col">{{ sender.rec_email }}</div>
-                            <div class="col-6">{{ sender.mailtext }}</div>
-                            <div class="col">{{ sender.time_to_send }}</div>
-                            <textarea v-model="time{{ forloop.counter }}" cols="30" rows="1">{{ sender.time_to_send }}</textarea>
-                        </div>
-                    </li>
-                    {% endfor %}
-                </ul>
+    <div class="container mt-3" id="app1">
+        <p>С помощью этой странички вы можете выполнить рассылку писем с отсрочкой по времени.</p>
+        <form name="mailSenderForm" method="post">{% csrf_token %}
+            <div class="form-group">
+                <label for="id_rec_email">Email address</label>
+                <input type="email" name="rec_email" class="form-control" id="id_rec_email">
+                <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone
+                    else.</small>
             </div>
-        </div>
+            <div class="form-group">
+                <label for="id_mailtext">Текст письма.</label>
+                <textarea class="form-control" id="id_mailtext" name="mailtext" rows="3"></textarea>
+            </div>
+            <div class="form-group">
+                <span>Отправить письмо через </span>
+                <label for="id_sending_delay">{% verbatim  %}{{ value }}{% endverbatim  %}</label>
+                <span> секунд.</span>
+                <input v-model="value" type="range" class="form-control-range" id="id_sending_delay"
+                    name="sending_delay" min="0" max="100" value="90" step="1">
+            </div>
+            <button type="submit" class="btn btn-primary" value="Send Email">Send Email</button>
+        </form>
     </div>
 
-    <script>
-        var app = new Vue({
-            el: '#app',
-            data: {
-                message: 'Hello Vue!',
-                value: 0,
-                isSent: false,
-                time1: '',
-                time2: '',
-                time3: '',
-                time4: '',
-                time5: '',
-                time6: '',
-                time7: '',
-                time8: '',
-                time9: '',
-                time10: '',
-            },
-            watch: {
+    {% verbatim  %}
+    <div class="container mb-3" id="app2">
+        <div class="card">
+            <div class="card-header">
+                <div class="row">
+                    <div class="col">Получатель</div>
+                    <div class="col-6">Текст письма</div>
+                    <div class="col">Время отправления</div>
+                </div>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li v-for="sender in mailsenders" class="list-group-item">
+                    <div class="row">
+                        <div class="col">{{ sender.rec_email }}</div>
+                        <div class="col-6">{{ sender.mailtext }}</div>
+                        <div v-if='sender.sent' class="col bg-success text-white">{{ sender.stringTimeToSend }}</div>
+                        <div v-else='sender.sent' class="col bg-danger text-white">{{ sender.stringTimeToSend }}</div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    {% endverbatim  %}
 
+
+    <script>
+
+        var app1 = new Vue({
+            el: '#app1',
+            data: {
+                value: 0,
+            },
+        });
+
+        var app2 = new Vue({
+            el: '#app2',
+            data: {
+                mailsenders: [
+                    {% for sender in mailsenders %}
+                        {
+                            name: 'sender{{ forloop.counter }}',
+                            rec_email: '{{ sender.rec_email }}',
+                            mailtext: '{{ sender.mailtext }}',
+                            time_to_send: '{{ sender.time_to_send }}',
+                            sent: false,
+                        },
+                    {% endfor %}
+                ],
+            },
+            methods: {
+                checkSenders: function() {
+                    // console.log('checkSenders')
+                    let isNotSent = 0;
+                    this.mailsenders.forEach(sender => {
+                        // console.log(sender.time_to_send)
+                        if (!sender.stringTimeToSend) {
+                            sender.stringTimeToSend = new Date(Number(sender.time_to_send));
+                            console.log(sender.stringTimeToSend);
+                        };
+                        if ((Date.now() - sender.time_to_send) > 0) {
+                            sender.sent = true;
+                        } else {
+                            isNotSent = 1;
+                        };
+                    });
+                    if (isNotSent) {
+                        setTimeout(function() {app2.checkSenders()}, 1000);
+                    };
+                }
+            },
+            created: function() {
+                this.checkSenders();
             },
         })
     </script>
